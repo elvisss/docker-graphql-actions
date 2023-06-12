@@ -31,19 +31,19 @@ jobs:
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+    - name: Build Docker Image
+      env:
         NEW_VERSION: ${{ steps.version.outputs.version }}
       run: |
-        echo "Initializing logging..."
-        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-        echo "Finishing logging..."
-        echo "new release version: $NEW_VERSION"
+        docker build -t elvisss24/docker-graphql:$NEW_VERSION .
+        docker build -t elvisss24/docker-graphql:latest .
 
-    # - name: Build Docker Image
-    #   run: |
-    #     docker build -t elvisss24/docker-graphql:0.0.2 .
-    #     docker build -t elvisss24/docker-graphql:latest .
-
-    # - name: Push Docker Image
-    #   run: |
-    #     docker push elvisss24/docker-graphql:0.0.2
-    #     docker push elvisss24/docker-graphql:latest
+    - name: Push Docker Image
+      env:
+        NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        docker push elvisss24/docker-graphql:$NEW_VERSION
+        docker push elvisss24/docker-graphql:latest
